@@ -31,74 +31,53 @@ pub fn app() -> Html {
     let usr_name_3 = use_state(|| String::new());
     let usr_name_4 = use_state(|| String::new());
     let usr_name_5 = use_state(|| String::new());
-    
+
     let show_box_1 = use_state(|| false);
     let show_box_2 = use_state(|| false);
 
-    let usr_1 = {
-        let usr_name_1 = usr_name_1.clone();
-        let usr_1_mmr_ref = usr_1_mmr_ref.clone();
-        let show_box_1 = show_box_1.clone();
-
-        Callback::from(move |e: SubmitEvent| {
-            e.prevent_default();
-            let input_1 = usr_1_mmr_ref.cast::<web_sys::HtmlInputElement>().unwrap();
-            if *show_box_1 {
-                show_box_1.set(false);
-                usr_name_1.set(String::new());
+    // Callback for handling checkbox toggles
+    let handle_checkbox = |usr_name: UseStateHandle<String>, show_box: UseStateHandle<bool>, input_ref: NodeRef| {
+        Callback::from(move |_: MouseEvent| {
+            let input = input_ref.cast::<web_sys::HtmlInputElement>().unwrap();
+            if *show_box {
+                show_box.set(false);
+                usr_name.set(String::new());
             } else {
-                usr_name_1.set(input_1.value());
-                show_box_1.set(true);
+                usr_name.set(input.value());
+                show_box.set(true);
             }
-            input_1.set_value("");
+            input.set_value("");
         })
-    };
-    let usr_2 = {
-        let usr_name_2 = usr_name_2.clone();
-        let usr_2_mmr_ref = usr_2_mmr_ref.clone();
-        let show_box_2 = show_box_2.clone();
-        
-        Callback::from(move |e: SubmitEvent| {
-            e.prevent_default();
-            let input_2 = usr_2_mmr_ref.cast::<web_sys::HtmlInputElement>().unwrap();
-            usr_name_2.set(input_2.value());
-            show_box_2.set(true);
-            input_2.set_value("");
-        })
-    };
-    let usr_3 = {
-        let usr_name_3 = usr_name_3.clone();
-    };
-    let usr_4 = {
-        let usr_name_4 = usr_name_4.clone();
-    };
-    let usr_5 = {
-        let usr_name_5 = usr_name_5.clone();
     };
 
+    let usr_1 = handle_checkbox(usr_name_1.clone(), show_box_1.clone(), usr_1_mmr_ref.clone());
+    let usr_2 = handle_checkbox(usr_name_2.clone(), show_box_2.clone(), usr_2_mmr_ref.clone());
+    // Repeat for usr_3, usr_4, and usr_5 if needed
 
     html! {
         <main class="container">
-            <form class="row" onsubmit={usr_1}>
-                <input id="usr-1-input" ref={usr_1_mmr_ref} />
-                <button type="submit">{"User 1"}</button>
+            <div class="row">
+                <input type="text" id="usr-1-input" ref={usr_1_mmr_ref} />
+                <input type="checkbox" id="usr-1-checkbox" onclick={usr_1} />
+                <label for="usr-1-checkbox">{"User 1"}</label>
                 if *show_box_1 {
                     <div class="user-box">
                         <h3>{"User 1"}</h3>
                         <p>{format!("Name: {}", *usr_name_1)}</p>
                     </div>
                 }
-            </form>
-            <form class="row" onsubmit={usr_2}>
-                <input id="usr-2-input" ref={usr_2_mmr_ref} />
-                <button type="submit">{"User 2"}</button>
+            </div>
+            <div class="row">
+                <input type="text" id="usr-2-input" ref={usr_2_mmr_ref} />
+                <input type="checkbox" id="usr-2-checkbox" onclick={usr_2} />
+                <label for="usr-2-checkbox">{"User 2"}</label>
                 if *show_box_2 {
                     <div class="user-box">
                         <h3>{"User 2"}</h3>
                         <p>{format!("Name: {}", *usr_name_2)}</p>
                     </div>
                 }
-            </form>
+            </div>
         </main>
     }
 }

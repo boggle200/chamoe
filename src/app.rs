@@ -4,6 +4,8 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
 
+use super::user_space_manager::*;
+
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "tauri"])]
@@ -17,50 +19,72 @@ struct GreetArgs<'a> {
 
 #[function_component(App)]
 pub fn app() -> Html {
-    let usr_mmr_ref = use_node_ref();
-    let usr_1_mmr_ref = use_node_ref();
-    let usr_2_mmr_ref = use_node_ref();
-    let usr_3_mmr_ref = use_node_ref();
-    let usr_4_mmr_ref = use_node_ref();
-    let usr_5_mmr_ref = use_node_ref();
+    let guest_1_ref = use_node_ref();
+    let guest_1_name = use_state(|| String::new());
+    let guest_1_permission = use_state(|| false);
+    let guest_1_state_box = use_state(|| false);
 
-    let usr_mmr_basic = use_state(|| 50.0);
-
-    let usr_name_1 = use_state(|| String::new());
-    let usr_name_2 = use_state(|| String::new());
-    let usr_name_3 = use_state(|| String::new());
-    let usr_name_4 = use_state(|| String::new());
-    let usr_name_5 = use_state(|| String::new());
-    
-    let usr_1 = {
-        let usr_name_1 = usr_name_1.clone();
-        let usr_1_mmr_ref = usr_1_mmr_ref.clone();
-        Callback::from(move |e: SubmitEvent| {
-            e.prevent_default();
-            usr_name_1.set(
-                usr_1_mmr_ref.cast::<web_sys::HtmlInputElement>().unwrap().value()
-            );
+    let handle_guest_1_box = {
+        let guest_1_state_box = guest_1_state_box.clone();
+        Callback::from(move |_| {
+            guest_1_state_box.set(!*guest_1_state_box);
         })
     };
-    let usr_2 = {
-        let usr_name_2 = usr_name_2.clone();
-    };
-    let usr_3 = {
-        let usr_name_3 = usr_name_3.clone();
-    };
-    let usr_4 = {
-        let usr_name_4 = usr_name_4.clone();
-    };
-    let usr_5 = {
-        let usr_name_5 = usr_name_5.clone();
+
+    let guest_2_ref = use_node_ref();
+    let guest_2_name = use_state(|| String::new());
+    let guest_2_permission = use_state(|| false);
+    let guest_2_state_box = use_state(|| false);
+
+    let handle_guest_2_box = {
+        let guest_2_state_box = guest_2_state_box.clone();
+        Callback::from(move |_| {
+            guest_2_state_box.set(!*guest_2_state_box);
+        })
     };
 
+    let guest_3_ref = use_node_ref();
+    let guest_3_name = use_state(|| String::new());
+    let guest_3_permission = use_state(|| false);
+    let guest_3_state_box = use_state(|| false);
+
+    let handle_guest_3_box = {
+        let guest_3_state_box = guest_3_state_box.clone();
+        Callback::from(move |_| {
+            guest_3_state_box.set(!*guest_3_state_box);
+        })
+    };
     html! {
         <main class="container">
-            <form class="row" onsubmit={usr_1}>
-                <input id="usr-1-input" ref={usr_1_mmr_ref} />
-                <button type="submit">{"User 1"}</button>
-            </form>
+            <p>{"It's time to start your cloud on your computer!"}</p>
+            
+            <div class="row">
+                <button onclick={handle_guest_1_box.clone()}>{"Guest 1"}</button>
+                if *guest_1_state_box {
+                    <div class="guest-box">
+                        <h3>{"User 1"}</h3>
+                        <p>{"Hello World!"}</p>
+                    </div>
+                }
+            </div>
+            <div class="row">
+                <button onclick={handle_guest_2_box.clone()}>{"Guest 2"}</button>
+                if *guest_2_state_box {
+                    <div class="guest-box">
+                        <h3>{"User 2"}</h3>
+                        <p>{"Hello World!"}</p>
+                    </div>
+                }
+            </div>
+            <div class="row">
+                <button onclick={handle_guest_3_box.clone()}>{"Guest 3"}</button>
+                if *guest_3_state_box {
+                    <div class="guest-box">
+                        <h3>{"User 3"}</h3>
+                        <p>{"Hello World!"}</p>
+                    </div>
+                }
+            </div>
         </main>
     }
 }
